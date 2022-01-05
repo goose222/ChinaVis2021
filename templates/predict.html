@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全国3D地图</title>
+    <link href="../static/css/style-p2.css" rel="stylesheet" type="text/css" media="all" />
+    <!--<script src="../static/js/echarts.min.js" charset="utf-8" type="text/javascript"></script>-->
+    <script src="../static/js/2p/heatmap.js" charset="utf-8" type="text/javascript"></script>
+    <!--    <script src="./jquery-3.5.1.min.js"></script>-->
+    <script src="../static/js/echarts.min.js"></script>
+    <script src="../static/js/echarts-gl.min.js"></script>
+
+    <script src="../static/js/predict/multi_pie.js" charset="utf-8" type="text/javascript"></script>
+    <script src="../static/js/predict/brush_line-p2.js" charset="utf-8" type="text/javascript"></script>
+    <script src="../static/js/predict/province_city.js" charset="utf-8" type="text/javascript"></script>
+    <script src="../static/js/predict/calenderp2.js" charset="utf-8" type="text/javascript"></script>
+
+    <script src="../static/js/bmap.min.js"></script>
+    <script src="../static/js/china.js"></script>
+    <script src="../static/jslib/jquery.min.js"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&amp;ak=5CczswGvKPkV26ua3GNn7I2HaFnODgt3"></script>
+
+</head>
+
+<body>
+
+<!--    <div id="card" style="width: 1000px;height:900px;"></div>-->
+<!--    <div id="mapsProvice" style="width: 33%; height: 500px; border: 1px solid #ccc; display: inline-block;float: left;"></div>-->
+        <div class="wpbox">
+        <div class="bnt">
+            <div class="topbnt_left fl">
+                <ul>
+                    <!-- <li class="active"><a href="#">警情警力</a></li> -->
+                    <li ><a href="http://127.0.0.1:5000/">主页面</a></li>
+                    <li><a href="http://127.0.0.1:5000/2p/北京">成因分析</a></li>
+                    <li><a href="http://127.0.0.1:5000/3p/北京">统计分析</a></li>
+                    <li class="active"><a href="#">预测</a></li>
+                </ul>
+            </div>
+            <h1 class="tith1 fl">污染情况大数据分析</h1>
+
+        </div>
+        <!--  top -->
+        <div class="mrbox_topmidd">
+                <div class="amiddboxttop" id="card">
+                    <select id="province" onchange="getCity();getinput()" style="width: 10%;height: 80%;margin-left: 5%;margin-top: 0.3%">
+                    </select>
+                    <select id="city" onchange="getinput()" style="width: 10%;height: 80%;margin-left: 5%">
+                    </select>
+                    <select id="year" onchange="getinput()" style="width: 10%;height: 80%;margin-left: 5%">
+                        <option>2019</option>
+                        <option>2020</option>
+                        <option>2021</option>
+                    </select>
+                    <select id="month" onchange="getinput()" style="width: 10%;height: 80%;margin-left: 5%">
+                        <option>一月</option>
+                        <option>二月</option>
+                        <option>三月</option>
+                        <option>四月</option>
+                        <option>五月</option>
+                        <option>六月</option>
+                        <option>七月</option>
+                        <option>八月</option>
+                        <option>九月</option>
+                        <option>十月</option>
+                        <option>十一月</option>
+                        <option>十二月</option>
+                    </select>
+                </div>
+                <!-- amidd_bott end -->
+        </div>
+        <!-- bnt end -->
+        <div class="left1">
+            <div class="aleftboxttop">
+                <!-- lefttoday_number end -->
+                <div id="detailed_text_title" style="width: 99%;height: 1%;position: relative"></div>
+                <div id="detailed_text" style="width: 99%;height: 98%;position: relative">
+                    <div id="weather" style="width: 50%;height: 99%;position: relative;float:left;"></div>
+                    <div id="polution" style="width: 40%;height:99%;float:left;position: relative;margin-left:8%;margin-top:2%;"></div>
+                </div>
+            </div>
+
+            <div class="aleftboxtmid">
+                <!-- <h2 class="tith2">中间的</h2> -->
+
+                <div id="multipie" style="width:100%;height:90%;position: relative;left: 10%"></div>
+                <!-- lefttoday_number end -->
+            </div>
+            <div class="aleftboxtbott">
+                <div id="icon" style="width: 15%;left:5%;position: relative;height:90%;float: left;">
+                    <img src="../static/images/place.png" width="100%" >
+                </div>
+                <div id="word" style="width: 78%;height:90%;float: left;left: 5%;position: relative;text-align:center;"><h1 id="big_word"> </h1></div>
+            </div>
+        </div>
+        <!--  left1 end -->
+        <div class="mrbox">
+			<!--青 岛 研 锦 网 络 科 技 有 限 公 司   版权所有-->
+            <!-- mrbox_top end -->
+            <div class="mrbox_top_right">
+                <div class="arightboxtop">
+                    <div id="line_city" style="width:99%;height:95%;"></div>
+
+                </div>
+                <div class="arightboxbott">
+                    <div id="calender" style="width:99%;height:42%;padding-left: 1%;padding-bottom: 0;"></div>
+                    <div id="calender_temp" style="width:99%;height:48%;padding-left: 1%;padding-top: 0"></div>
+                </div>
+            </div>
+            <!-- mrbox_top_right end -->
+        </div>
+		<!--青岛研锦网络科技有限公司   版权所有-->
+    </div>
+
+    <script>
+        setProvince();
+        //var inputdata = getinput(); //鹅这是给鹅的数据，[month, year, lat, lon], 每次用户点击下拉框都会更新
+
+        $.ajax({
+            url: "get_data_prediction",
+            data: {data:JSON.stringify({'data':[2019, 39.91812360584148, 116.37251358116619, '北京市', '朝阳区']})},
+            type: "POST",
+            dataType: "json",
+            success: function (w) {
+                data=w.data
+                console.log(data);
+                process_data(data);
+            }
+        })
+
+
+        function colave(arr) {
+            var arrave = [];
+            for (var i=0; i<arr.length;++i){
+                for (var j=0;j<arr[0].length;++j){
+                    if (i==0)
+                        arrave.push(arr[i][j]);
+                    else
+                        arrave[j] += arr[i][j];
+                }
+            }
+            for (var i=0;i<arr[0].length;++i)
+                arrave[i] = arrave[i]/arr.length;
+            return arrave;
+        }
+
+        function monthave_brush_line(year_hole) { //返回6*12
+            var month_day = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+            var months_polution = [];
+            // 每天
+
+            /*for (var i=0;i<year_hole.length;++i){
+                var month_i = year_hole[i].slice(0,6);
+                months_polution.push(month_i);
+            }*/
+
+            // 月
+            for (var i=0;i<12;++i){
+                var start = 0;
+                for (var j=0;j<i;++j){
+                    start += month_day[j];
+                }
+                var month_i = colave(year_hole.slice(start, start+month_day[i])).slice(0,6);
+                months_polution.push(month_i);
+            }
+            // 矩阵转置
+            var polution_months = months_polution[0].map(function (col, i) {
+                return months_polution.map(function (row) {
+                    return row[i];
+                 })
+            });
+            return polution_months;
+        }
+
+        function AQI_temp(year_hole) {
+            var layers = {"so2":[0, 50, 150, 475, 800, 1600, 2100, 2620], "pm10":[0, 50, 150, 250, 350, 420, 500, 600],
+            "pm2_5":[0, 35, 75, 115, 150, 250, 350, 500], "no2":[0, 40, 80, 180, 280, 565, 750, 940],
+            "co":[0, 2, 4, 14, 24, 36, 48, 60], "o3":[0, 160, 200, 300, 400, 800, 1000, 1200]}; //按日平均的各污染物级别
+            var aqi = [0, 50, 100, 150, 200, 300, 400, 500];
+            var year_temp = [];
+            var year_aqi = [];
+            var seriesname = ['pm2_5', 'pm10', 'so2','no2', 'co','o3'];
+            for (var i=0;i<year_hole.length;++i)
+            {
+                year_temp.push(year_hole[i][8]);
+                var max_num = 0;
+                for (var j=0;j<6;++j){
+                    var polution = seriesname[j];
+                    var layertmp = layers[polution];
+                    for (var k=0;k<8;++k){
+                        if (year_hole[i][j]>layertmp[k]&&year_hole[i][j]<=layertmp[k+1]){
+                            var newaqi = aqi[k] + (year_hole[i][j]-layertmp[k])*(aqi[k+1]-aqi[k])/(layertmp[k+1]-layertmp[k]);
+                            if (newaqi>max_num)
+                                max_num = newaqi;
+                            break;
+                        }
+                    }
+                }
+                year_aqi.push(max_num);
+            }
+            console.log({"temp":year_temp, "aqi":year_aqi})
+            return {"temp":year_temp, "aqi":year_aqi};
+        }
+
+        function process_data(year_hole) {
+           // console.log('year_hole',year_hole)
+            var year = document.getElementById("year").selectedIndex + 2019;
+            var year_day = 365;
+            var month_day = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+            if (year%4==0){
+                year_day=366;
+                month_day[1]++;
+            }
+            // 下面4行可以删掉!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+            //var day= [100, 200, 400, 100, 40, 10, 10, 10, 20, 50, 10000];
+            //var year_hole = [];
+            //for (var i = 0;i<year_day;++i)
+            //    year_hole.push(day);
+
+            // 本月求平均
+            var month_i = document.getElementById("month").selectedIndex;
+            var start=0, end;
+            for (var i=0;i<month_i;++i){
+                start +=month_day[i];
+            }
+            end = start+month_day[month_i];
+            var month_ave = colave(year_hole.slice(start, end));
+
+            pred_multi_pie(month_ave.slice(0, 6));
+            detailed_text(month_ave);
+
+            // 每月平均
+            var polution_months = monthave_brush_line(year_hole);
+            brush_linep2(polution_months);
+
+            // AQI和TEMP
+            var data_dict = AQI_temp(year_hole);
+            var year_temp = data_dict["temp"];
+            var year_aqi = data_dict["aqi"]
+            calender_heat(year_temp, year_aqi);
+        }
+
+
+
+   </script>
+</body>
+
+</html>

@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全国3D地图</title>
+    <link href="../static/css/style.css" rel="stylesheet" type="text/css" media="all" />
+    <!--<script src="../static/js/echarts.min.js" charset="utf-8" type="text/javascript"></script>-->
+    <script src="../static/js/brush_line.js" charset="utf-8" type="text/javascript"></script>
+    <script src="../static/js/ranklist.js" charset="utf-8" type="text/javascript"></script>
+    <script src="../static/js/rank_now_city.js" charset="utf-8" type="text/javascript"></script>
+    <script src="../static/js/yibiaopan.js" charset="utf-8" type="text/javascript"></script>
+    <!--    <script src="./jquery-3.5.1.min.js"></script>-->
+    <script src="../static/js/echarts.min.js"></script>
+    <script src="../static/js/echarts-gl.min.js"></script>
+    <script src="../static/js/bmap.min.js"></script>
+    <script src="../static/js/china.js"></script>
+    <script src="../static/jslib/jquery.min.js"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&amp;ak=5CczswGvKPkV26ua3GNn7I2HaFnODgt3"></script>
+    <script src="https://www.guanacossj.com/static/js/echarts-wordcloud.min.js"></script>
+
+</head>
+
+<body>
+<!--    <div id="card" style="width: 1000px;height:900px;"></div>-->
+<!--    <div id="mapsProvice" style="width: 33%; height: 500px; border: 1px solid #ccc; display: inline-block;float: left;"></div>-->
+        <div class="wpbox">
+        <div class="bnt">
+            <div class="topbnt_left fl">
+                <ul>
+                    <!-- <li class="active"><a href="#">警情警力</a></li> -->
+                    <li class="active"><a href="#">主页面</a></li>
+                    <li><a href="http://127.0.0.1:5000/2p" id="2p">成因分析</a></li>
+                    <li><a href="http://127.0.0.1:5000/3p" id="3p">统计分析</a></li>
+                    <li><a href="http://127.0.0.1:5000/predict">预测</a></li>
+                </ul>
+            </div>
+            <h1 class="tith1 fl">污染情况大数据分析</h1>
+        </div>
+        <!-- bnt end -->
+        <div class="left1">
+            <div class="aleftboxttop" >
+                <div id="layer03_left" style="width:48%;padding:10px" class="layer03-panel">
+                    <div id="layer03_left_02" class="layer03-left-chart" style="width: 400px;height: 100px;"></div>
+                    <div id="eventtitle" style="width: 400px;color: whitesmoke;font-size: 12px;margin-top: 10px;"></div>
+                    <div id="wordcloud" style="width: 380px;height: 200px;"></div>
+                </div>
+                <!-- lefttoday_number end -->
+            </div>
+            <div class="aleftboxtbott">
+                <h2 class="tith2">仪表盘</h2>
+                <div id="yibiaopan" style="width:60%;height:100%;float: left"></div>
+                <div id="detailed_data" style="width:39%;height:80%;float: left;top: 10%;left: 5%;position: relative"></div>
+            </div>
+        </div>
+        <!--  left1 end -->
+        <div class="mrbox">
+            <div class="mrbox_topmidd" style="width: 69%;">
+                <input type="checkbox" id="weather" style="color: azure" checked="checked"> weather</input>
+                <select id="select1" style="visibility: visible" onchange="func_select1()">
+                    <option value="temp">温度</option>
+                    <option value="rh">相对湿度</option>
+                    <option value="psfc">气压</option>
+                </select>
+                <input type="checkbox" id="flow" style="color: azure" checked="checked"> flow</input>
+                <input type="checkbox" id="pollution" style="color: azure" checked="checked"> pollution</input>
+                <select id="select2" style="visibility: visible" onchange="func_select2()">
+                    <option value="pm2_5">pm2_5</option>
+                    <option value="pm10">pm10</option>
+                    <option value="so2">so2</option>
+                    <option value="no2">no2</option>
+                    <option value="co">co</option>
+                    <option value="o3">o3</option>
+                </select>
+                <div class="amiddboxttop" id="card">
+                    <h2 class="tith2 pt1">大地图</h2>
+                </div>
+                <!--  amiddboxttop end-->
+                <div class="amidd_bott">
+                    <div class="amiddboxtbott1 fl">
+                        <div style="width:78%;height:17%;top: 3%;float: left"><h2 class="tith2 pt1">时间轴+折线图</h2></div>
+                        <div style="width:20%;height:17%;top: 3%;float: left"><button type="button" id="interval_btn" onclick="interval_button()">STOP</button></div>
+                        <div id="brush_line" style="width:98%;height:82%;top: 18%;position: relative"></div>
+                    </div>
+                </div>
+                <!-- amidd_bott end -->
+            </div>
+
+			<!--青 岛 研 锦 网 络 科 技 有 限 公 司   版权所有-->
+            <!-- mrbox_top end -->
+            <div class="mrbox_top_right">
+                <div class="arightboxbott" id="mapsProvice">
+                    <h2 class="tith2">小地图</h2>
+                </div>
+                <div class="arightboxtop">
+                    <h2 class="tith2" id="rank">污染排行榜</h2>
+                    <select id="select_sort" onchange="order_change()" style="margin-left:10px">
+                        <option value="up">升序</option>
+                        <option value="down">降序</option>
+                    </select>
+                    <div id="zhtc_table" class="left2_table" style="height:70%"></div>
+                    <center><h2 class="tith2" id="now_rank" ></h2></center>
+
+                </div>
+            </div>
+            <!-- mrbox_top_right end -->
+        </div>
+		<!--青岛研锦网络科技有限公司   版权所有-->
+    </div>
+<script>
+    //brush_line({{line_data|safe}},{{city_line_data|safe}},'pm2_5');
+    //api_bar({{api_bardata|safe}});
+    city_aqi={{city_AQI|safe}}
+    yibiao(city_aqi['max']);
+    var tmp=[city_aqi['pm2_5'],city_aqi['pm10'],city_aqi['so2'],city_aqi['no2'],city_aqi['o3'],city_aqi['co']];
+    yibiaotext(tmp);
+</script>
+<script>
+var select_region='西藏';
+document.getElementById("2p").href = "http://127.0.0.1:5000/2p/"+select_region;
+document.getElementById("3p").href = "http://127.0.0.1:5000/3p/"+select_region;
+
+var setop;
+
+var myChart_line;
+var interval;
+var stop=0;
+var start = 0;
+var end = 5;
+var layer;
+var layers = {"so2":[0, 50, 150, 475, 800, 1600, 2100, 2620], "pm10":[0, 50, 150, 250, 350, 420, 500, 600],
+    "pm2_5":[0, 35, 75, 115, 150, 250, 350, 500], "no2":[0, 40, 80, 180, 280, 565, 750, 940],
+    "co":[0, 2, 4, 14, 24, 36, 48, 60], "o3":[0, 160, 200, 300, 400, 800, 1000, 1200]}; //按日平均的各污染物级别
+var global_time='2016/01/01';
+var dict={'pm2_5':0,'pm10':1,'so2':2,'no2':3,'co':4,'o3':5};
+
+var colorlist = ["rgba(3,153,252,0.3)", "rgba(0,252,229,0.3)", "rgba(21,255,96,0.28)", "rgba(199,255,7,0.33)",
+        "rgba(252,238,0,0.3)", "rgba(252,147,6,0.3)", "rgba(255,96,0,0.28)", "rgba(255,0,3,0.35)"];
+
+function brush_line(data, city_data,index) {
+    // var xdata = Array.from({length:data.length},(item, index)=> index+1);
+
+    myChart_line = echarts.init(document.getElementById('brush_line'));
+
+     var ydata = data['data'];
+    //var ydata = [1, 40, 100,200,300,400];
+     var xdate = data['date'];
+    //var xdate = ['1','1','1','1','1','1'];
+    var city = city_data['city'];
+    var city_ydata = [];
+    for (var i=0;i<city_data['data'].length;i++){
+        city_ydata.push(city_data['data'][i][dict[index]]);
+    }
+
+    // 计算背景颜色
+    var polution = data['polution'];
+    var yname = polution +' (μg/m³)';
+    layer = layers[polution];
+    // var max_num = max[polution];
+    var max_num = Math.max(...ydata);
+    var background = [];
+    for (var i=0;i<layer.length;++i){
+        var _offset = 1-layer[i]/max_num;
+        if (_offset<0) break;
+        var _color = colorlist[i];
+        background.push({offset: _offset, color: _color});
+    }
+    // console.log("aaaaaaaaaaa",background);
+    var line={
+        // backgroundColor:new echarts.graphic.LinearGradient(0, 0, 0, 1, background, false),
+        //new echarts.graphic.LinearGradient(0, 0, 0, 1, background,false),
+        grid: {
+            y: "23%", // y 偏移量
+            width: "83%", // 宽度
+            height: "55%", // 高度
+            x: "10%",
+
+            show:true,
+            // borderColor:"transparent",
+            backgroundColor: new echarts.graphic.LinearGradient(0, 0, 0, 1, background, false)
+        },
+        xAxis: {
+            axisLine:{
+                lineStyle: {
+                    color: "#ffffff"
+                }
+            },
+            data: xdate,
+            axisLabel:{
+                textStyle: {
+                    color: '#ffffff'
+                }
+            }
+        },
+        yAxis: [{
+            show:true,
+            type: 'value',
+            nameLocation: "end",
+            name: yname,//'(μg/m³)',
+            nameTextStyle:{
+                color:"#f2fff8"
+            },
+            //min: 0,
+	        //max: max_num,
+            // interval: ,
+            splitNumber: 4,
+            axisLine:{
+                lineStyle: {
+                    color: "#ffffff"
+                }
+            },
+            axisLabel:{
+                textStyle: {
+                    color: '#ffffff'
+                }
+            },
+            splitLine: {
+                lineStyle: {
+                    show:false
+                }
+            }
+        }],
+        legend: {
+            show:true,
+            data: ['中国', city],
+            textStyle:{//图例文字的样式
+                color:'#ffffff'
+            }
+        },
+        series: [{
+            name: '中国',
+            type: 'line',
+            data: ydata,
+
+            itemStyle: {
+                normal: {
+                color: "#ff29ab",
+                lineStyle: {
+                    color: "#ff29ab"
+                    }
+                }
+             },
+            },
+            {
+            name: city,
+            type: 'line',
+            data: city_ydata,
+
+            itemStyle: {
+                normal: {
+                color: "#f98e0c",
+                lineStyle: {
+                    color: "#f98415"
+                    }
+                }
+             },
+        }
+        ],
+        dataZoom: [
+            {
+                textStyle:false,
+                show: true,
+                realtime: true,
+                start: 0,
+                end: 100,
+                height: 8,//组件高度
+                left: 30, //左边的距离
+                right: 40,//右边的距离
+                top: "95%",
+                filterMode: "filter",
+                fillerColor: new echarts.graphic.LinearGradient(1, 0, 0, 0, [{
+                    //给颜色设置渐变色 前面4个参数，给第一个设置1，第四个设置0 ，就是水平渐变
+                    //给第一个设置0，第四个设置1，就是垂直渐变
+                    offset: 0,
+                    color: 'rgb(69,191,164,0.3)'
+                }, {
+                    offset: 1,
+                    color: 'rgba(35,191,31,0.3)'
+                }]),
+                /*fillerColor:{
+
+                    type: 'radial',
+                    x: 0.5,
+                    y: 0.5,
+                    r: 1,
+                    colorStops: [{
+                        offset: 0, color: '#f2fff8' // 0% 处的颜色
+                    }, {
+                        offset: 0.6, color: 'rgba(16,122,58,0.47)' // 100% 处的颜色
+                    }],
+                    global: false // 缺省为 false
+                },*/
+                handleIcon: 'M-292,322.2c-3.2,0-6.4-0.6-9.3-1.9c-2.9-1.2-5.4-2.9-7.6-5.1s-3.9-4.8-5.1-7.6c-1.3-3-1.9-6.1-1.9-9.3c0-3.2,0.6-6.4,1.9-9.3c1.2-2.9,2.9-5.4,5.1-7.6s4.8-3.9,7.6-5.1c3-1.3,6.1-1.9,9.3-1.9c3.2,0,6.4,0.6,9.3,1.9c2.9,1.2,5.4,2.9,7.6,5.1s3.9,4.8,5.1,7.6c1.3,3,1.9,6.1,1.9,9.3c0,3.2-0.6,6.4-1.9,9.3c-1.2,2.9-2.9,5.4-5.1,7.6s-4.8,3.9-7.6,5.1C-285.6,321.5-288.8,322.2-292,322.2z',
+            },
+            {
+                show: true,
+                type: 'inside',
+                realtime: true,
+                start: 30,
+                end: 50,
+
+                textStyle: {
+                    color: "#ffffff",
+                }
+            }
+        ]
+    };
+    // 使用刚指定的配置项和数据显示图表。
+    myChart_line.setOption(line);
+    startvideo(document.getElementById("interval_btn"));
+
+
+    //滑动时实时获取start和end的值
+    myChart_line.on('datazoom',function (params) {
+        // 滑动块改变，动态改变背景颜色
+        var ymax = myChart_line.getModel().getComponent('yAxis').axis.scale._extent[1];
+        // console.log(ymax);
+        var newback = []
+        for (var i=0;i<layer.length;++i){
+            var _offset = 1-layer[i]/ymax;
+            if (_offset<0) break;
+            var _color = colorlist[i];
+            newback.push({offset: _offset, color: _color});
+        }
+        // console.log(newback);
+        myChart_line.setOption({
+            grid: {
+                backgroundColor: new echarts.graphic.LinearGradient(0, 0, 0, 1, newback, false)
+            }
+        });
+        start = params.start;
+        end = params.end;
+    });
+
+    myChart_line.on("click", function(param){
+        global_time = param.name;
+        //console.log("xxxxxxxxxxxxxxxxxxxxx");
+        console.log(global_time);
+
+        $.ajax({
+            url: "get_data_main_map",
+            data: {data:JSON.stringify({'index1':'temp','index2':'pm2_5','date':global_time,'city':select_region})},
+            type: "POST",
+            async:false,
+            dataType: "json",
+            success: function (data) {
+                let mydata=data.data_main_map
+                //console.log("ddddddddddddddddd", mydata.pollution)
+                drawmap(mydata)
+                weather = mydata.weather;
+                pollution = mydata.pollution;
+                flow = mydata.flow;
+                province = mydata.province;
+                var tmp=pollution.sort(function (a, b) {
+                        return b[0].value - a[0].value;
+                    }).slice(0, 10);
+                    console.log(tmp);
+
+                    var rank=[];
+                    var rankdist={};
+                    for (var i=0;i<10;i++){
+                        rank.push([tmp[i][0].name,tmp[i][0].value]);
+
+                    }
+                    // for(var i=0;i<tmp.length;++i)rankdist[tmp[i][0].name]=tmp[i][0].value;
+                    // console.log(rank);
+                    rankList(tmp);
+                    rank_now_city({rank:'',name:'',value:''})
+
+            }
+        })
+
+
+
+        $.ajax({
+                    url: "get_data_province",
+                    data: {data:JSON.stringify({'level':'province','name':select_region,'index':'pm2_5','date':global_time})},
+                    type: "POST",
+                    dataType: "json",
+                    success: function (data) {
+                        console.log("select province",data)
+                        //update_citydata('pm2_5',data['LineData_city']);
+
+                        var city_aqi=data['city_AQI'];
+                        yibiao(city_aqi['max']);
+                        var tmp=[city_aqi['pm2_5'],city_aqi['pm10'],city_aqi['so2'],city_aqi['no2'],city_aqi['o3'],city_aqi['co']];
+                        yibiaotext(tmp);
+                        document.getElementById("2p").href = "http://127.0.0.1:5000/2p/"+select_region;
+                        document.getElementById("3p").href = "http://127.0.0.1:5000/3p/"+select_region;
+                        var url = "../static/jslib/mapjs/" + select_region + "/" + select_region + ".js";
+                        loadScript(url, setOpt);
+                        //rank_now_city({rank:proIndex+1,name:selectProvice,value:provalue})
+                    }
+                })
+
+
+    });
+
+}
+
+
+function interval_button() {
+    var btn = document.getElementById("interval_btn");
+    if (stop==0){  //切换为stop 用户自调节
+        endvideo(btn);
+    }
+    if (stop==1){  //切换为自动播放
+        startvideo(btn);
+    }
+    stop = 1-stop;
+}
+
+function endvideo(element) {
+    element.innerHTML = "START";
+    clearInterval(interval);
+}
+
+function startvideo(element) {
+    element.innerHTML = "STOP";
+    interval = setInterval(function(){
+        if (end < 100) {
+            myChart_line.setOption({
+                dataZoom: {
+                    start: start++,
+                    end: end++
+                }
+
+            });
+            var mid = (start+end)/2;
+            var op = myChart_line.getOption();
+            var xlength = op.series[0].data.length;
+            global_index = Math.round(xlength*mid/100);
+        } else {
+            start = 0;
+            end = 5;
+        }
+
+        var ymax = myChart_line.getModel().getComponent('yAxis').axis.scale._extent[1];
+        //console.log(ymax);
+        var newback = []
+        for (var i=0;i<layer.length;++i){
+            var _offset = 1-layer[i]/ymax;
+            if (_offset<0) break;
+            var _color = colorlist[i];
+            newback.push({offset: _offset, color: _color});
+        }
+        // console.log(newback);
+        myChart_line.setOption({
+            grid: {
+                backgroundColor: new echarts.graphic.LinearGradient(0, 0, 0, 1, newback, false)
+            }
+        });
+    }, 600);
+}
+
+
+// city数据更新时，调用这个函数
+function update_citydata(index,city_data) {
+    var city_ydata = [];
+    for (var i=0;i<city_data['data'].length;i++){
+        city_ydata.push(city_data['data'][i][dict[index]]);
+    }
+    var city = city_data['city'].toString();
+    console.log(city)
+
+    var line_option = myChart_line.getOption();
+    line_option.series[1].data = city_ydata;
+    myChart_line.setOption(line_option);
+    line_option.legend = {data:['中国',city]};
+    myChart_line.setOption(line_option);
+    line_option.series[1].name=city;
+    myChart_line.setOption(line_option);
+    // console.log(line_option.series[0].name);
+    // console.log(line_option.series[1].name);
+    // var newline_option = myChart_line.getOption();
+    // console.log(newline_option.series[0].name);
+    // console.log(newline_option.series[1].name);
+}
+
+
+// country数据更新时（换污染物），调用这个函数
+function update_countrydata(data,city_data,index) {
+    var ydata = data['data'];
+    var polution = data['polution'];
+    var yname = polution +' (μg/m³)';
+    var city_ydata = [];
+    for (var i=0;i<city_data['data'].length;i++){
+        city_ydata.push(city_data['data'][i][dict[index]]);
+    }
+    var line_option = myChart_line.getOption();
+    line_option.series[0].data = ydata;
+    line_option.series[1].data = city_ydata;
+    line_option.yAxis[0].name = yname;
+    myChart_line.setOption(line_option);
+}
+
+
+
+        brush_line({{line_data|safe}},{{city_line_data|safe}},'pm2_5');
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+                                                       // map
+
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        let myChart = echarts.init(card);
+        var weather;
+        var pollution;
+        var province;
+        var flow;
+
+        function order_change(){
+            var m = $('#select_sort option:selected').val();
+
+            if(m==="up"){
+                var tmplist=pollution.sort(function (a, b) {
+                 return b[0].value - a[0].value;
+                    }).slice(0, 10);
+                rankList(tmplist)
+            }
+            else if(m==="down"){
+                var tmplist2=pollution.sort(function (a, b) {
+                 return a[0].value - b[0].value;
+                    }).slice(0, 10);
+                rankList(tmplist2)
+            }
+        }
+
+        function func_select1(){
+            var m = $('#select1 option:selected').val();
+            console.log(m);
+            $.ajax({
+            url: "get_data_main_map",
+            data: {data:JSON.stringify({'index1':m,'index2':'','date':global_time,'city':select_region})},
+            type: "POST",
+            dataType: "json",
+            success: function (w) {
+                weather = w;
+                var wbox= document.getElementById('weather');
+                if(wbox.checked) {console.log("weather success!");refreshData(1,weather);}
+            }
+        })
+
+        }
+
+        function func_select2(){
+            var m = $('#select2 option:selected').val();
+            console.log(m);
+            $.ajax({
+            url: "get_data_main_map",
+            data: {data:JSON.stringify({'index1':'','index2':m,'date':global_time,'city':select_region})},
+            type: "POST",
+            dataType: "json",
+            success: function (p) {
+
+                var line_data=p.line_data;
+                var city_line=p.LineData_city;
+                update_countrydata(line_data,city_line,m);
+
+                let tmp_p = p.data_main_map;
+                if(pollution==tmp_p.pollution) console.log("pollution same!!!")
+                pollution = tmp_p.pollution;
+                province = tmp_p.province;
+
+                var pbox= document.getElementById('pollution');
+                console.log("ssssoooorrrrrtttttt:", pollution.sort(function (a, b) {
+                        return b[0].value - a[0].value;
+                }))
+                if(pbox.checked) {
+                    var tmp=pollution.sort(function (a, b) {
+                        return b[0].value - a[0].value;
+                    }).slice(0, 10);
+                    console.log(tmp);
+
+                    var rank=[];
+                    var rankdist={}
+                    for (var i=0;i<10;i++){
+                        rank.push([tmp[i][0].name,tmp[i][0].value]);
+
+                    }
+                    // for(var i=0;i<pollution.length;++i)rankdist[pollution[i][0].name]=pollution[i][0].value;
+                    // console.log("rankdist:", rankdist);
+                    rankList(tmp);
+
+                    console.log("pollution success!")
+                    refreshData(2,convertData(pollution))
+                    refreshData(3,convertData(tmp))
+
+                }
+
+            }
+        })
+
+        }
+
+        ////////////////
+        var weatherbox= document.getElementById('weather');
+        weatherbox.onclick =function(){
+            console.log("weather")
+            var select1=document.getElementById('select1')
+            if(this.checked){
+                refreshData(1,weather)
+
+                select1.style.visibility="visible"
+            //选中后需要执行的方法
+            } else{
+                refreshData(1,[]);
+                select1.style.visibility="hidden"
+            //未选中事件
+            }
+        }
+        var flowbox= document.getElementById('flow');
+        flowbox.onclick =function(){
+            console.log("flow")
+            if(this.checked){
+            //选中后需要执行的方法
+                refreshData(0,flow)
+            } else{
+                refreshData(0,[])
+            //未选中事件
+            }
+        }
+        var pollutionbox= document.getElementById('pollution');
+        pollutionbox.onclick =function(){
+            console.log("pollution")
+            var select2=document.getElementById('select2')
+            if(this.checked){
+            //选中后需要执行的方法
+                select2.style.visibility="visible"
+                refreshData(2,convertData(pollution))
+                refreshData(3,convertData(pollution.sort(function (a, b) {
+                    return b[0].value - a[0].value;
+            }).slice(0, 6)))
+            } else{
+                refreshData(2,[])
+                refreshData(3,[])
+                select2.style.visibility="hidden"
+            //未选中事件
+            }
+        }
+        //////////////
+
+        function refreshData(i,data){
+             //刷新数据
+              console.log("refresh!!!!!");
+              console.log(data);
+
+              var option = myChart.getOption();
+              option.series[i].data = data;
+
+              if(i===1 && data.length!==0){
+                    data = data.sort(function (a, b) {
+                        return b.value[2] - a.value[2];
+                    });
+                  //console.log("data.min:", data[data.length-1].value[2]);
+                  //console.log("data.max:", data[0].value[2]);
+                  option.visualMap[i].min=data[data.length-1].value[2];
+                  option.visualMap[i].max = data[0].value[2];
+              }
+              myChart.setOption(option);
+        }
+
+        console.log(global_time)
+        $.ajax({
+            url: "get_data_main_map",
+            data: {data:JSON.stringify({'index1':'temp','index2':'pm2_5','date':global_time,'city':select_region})},
+            type: "POST",
+            dataType: "json",
+            success: function (data) {
+                let mydata=data.data_main_map
+                console.log("ddddddddddddddddd", mydata.pollution)
+                drawmap(mydata)
+                weather = mydata.weather;
+                pollution = mydata.pollution;
+                flow = mydata.flow;
+                province = mydata.province;
+                var tmp=pollution.sort(function (a, b) {
+                        return b[0].value - a[0].value;
+                    }).slice(0, 10);
+                    console.log(tmp);
+
+                    var rank=[];
+                    var rankdist={};
+                    for (var i=0;i<10;i++){
+                        rank.push([tmp[i][0].name,tmp[i][0].value]);
+
+                    }
+                    // for(var i=0;i<tmp.length;++i)rankdist[tmp[i][0].name]=tmp[i][0].value;
+                    // console.log(rank);
+                    rankList(tmp);
+
+            }
+        })
+
+        function loadScript(url, callback) {
+            var script = document.createElement("script")
+            script.type = "text/javascript";
+            if (script.readyState) {
+                script.onreadystatechange = function() {
+                    if (script.readyState == "loaded" || script.readyState == "complete") {
+                        script.onreadystatechange = null;
+                        callback();
+                    }
+                };
+            } else {
+                script.onload = function() {
+                    callback();
+                };
+            }
+            script.src = url;
+            document.getElementsByTagName("head")[0].appendChild(script);
+        }
+
+        var geoCoordMap = {//市区坐标
+            '黑龙江': [127.9688, 45.368],
+            '内蒙古': [110.3467, 41.4899],
+            "吉林": [125.8154, 44.2584],
+            '北京': [116.4551, 40.2539],
+            "辽宁": [123.1238, 42.1216],
+            "河北": [114.4995, 38.1006],
+            "天津": [117.4219, 39.4189],
+            "山西": [112.3352, 37.9413],
+            "陕西": [109.1162, 34.2004],
+            "甘肃": [103.5901, 36.3043],
+            "宁夏": [106.3586, 38.1775],
+            "青海": [101.4038, 36.8207],
+            "新疆": [87.9236, 43.5883],
+            "西藏": [91.11, 29.97],
+            "四川": [103.9526, 30.7617],
+            "重庆": [108.384366, 30.439702],
+            "山东": [117.1582, 36.8701],
+            "河南": [113.4668, 34.6234],
+            "江苏": [118.8062, 31.9208],
+            "安徽": [117.29, 32.0581],
+            "湖北": [114.3896, 30.6628],
+            "浙江": [119.5313, 29.8773],
+            "福建": [119.4543, 25.9222],
+            "江西": [116.0046, 28.6633],
+            "湖南": [113.0823, 28.2568],
+            "贵州": [106.6992, 26.7682],
+            "云南": [102.9199, 25.4663],
+            "广东": [113.12244, 23.009505],
+            "广西": [108.479, 23.1152],
+            "海南": [110.3893, 19.8516],
+            '上海': [121.4648, 31.2891]
+
+        };
+
+        var convertData = function (data) {
+            var res = [];
+            for (var i = 0; i < data.length; i++) {
+                var geoCoord = geoCoordMap[data[i][0].name];
+                if (geoCoord) {
+                    res.push({
+                        name: data[i][0].name,
+                        value: geoCoord.concat(data[i][0].value)
+                    });
+                }
+            }
+            return res;
+        };
+
+
+
+        function drawmap(data) {
+            // console.log(data.weather);
+
+            var option = {
+                backgroundColor: '#ddd',
+                visualMap: [{
+                    type: 'continuous',
+                    seriesIndex: 0,
+                    text: ['scatter3D'],
+                    left: 'right',
+                    calculable: true,
+                    min:250/300,
+                    max: 300/300,
+                    inRange: {
+                        color: ['#87aa66', '#eba438', '#d94d4c'],
+                        opacity: 1
+                    }
+                },
+                {
+                    type: 'continuous',
+                    seriesIndex: 1,
+                    text: ['bar3D'],
+                    calculable: true,
+                    min:3,
+                    max: 200,
+                    inRange: {
+                        color: ['#66a2aa', '#387aeb', '#4c5ad9'],
+                        opacity: 1
+                    }
+                }],
+                geo3D: {
+                    map: 'china',
+                    roam: true,
+                    itemStyle: {
+                        areaColor: '#ccc',
+                        opacity: 0.2,
+                        borderWidth: 0.8,
+                        borderColor: 'rgb(62,215,213)'
+                    },
+                    // boxHeight:1,
+                    // regionHeight:1,
+                    label: {
+                        show: false,
+                    },
+                    emphasis: { //当鼠标放上去  地区区域是否显示名称
+                        label: {
+                            show: true,
+                            textStyle: {
+                                color: '#fff',
+                                fontSize: 3,
+                                backgroundColor: 'rgba(0,23,11,0)'
+                            }
+                        }
+                    },
+                    light: {
+                        main: {
+                            color: '#fff', //光照颜色
+                            intensity: 1.2, //光照强度
+                            shadowQuality: 'high', //阴影亮度
+                            shadow: false, //是否显示阴影
+                            //                        alpha: 55,
+                            beta: 10
+
+                        },
+                        ambient: {
+                            intensity: 0.3
+                        }
+                    }
+                },
+
+                // selectedMode: 'single',
+
+                series: [{
+                            name: 'light',
+                            type: 'scatter3D', //标识点//symbol: 'pin',  //散点的形状。默认为圆形。
+                            coordinateSystem: 'geo3D',
+                            data: data.weather,
+                            symbolSize: function() {
+                                return 5
+                            },
+                            label: {
+                                show: false
+                            },
+                            emphasis: { //当鼠标放上去  地区区域是否显示名称
+                                show:false
+                            },
+                        },
+                                        {
+                           name: 'bar3D',
+                           type: "bar3D",
+                           coordinateSystem: 'geo3D',
+                             barSize: 0.5, //柱子粗细
+                             shading: 'lambert',
+                             opacity: 1,
+                             bevelSize:0.3,
+                             label: {
+                               show: false,
+                               formatter: '{b}'
+                           },
+                           data: convertData(data.pollution)
+                    }
+
+
+                        ]
+
+            }
+
+
+            var option2 = {
+        visualMap: [{
+            show: false,
+            left: 'right',
+            min: -20,
+            max: 20,
+            seriesIndex: 0,
+            dimension: 4,
+            inRange: {
+                // color: ['green', 'yellow', 'red']
+                color: ['#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026']
+            },
+            realtime: false,
+            calculable: true,
+            textStyle: {
+                color: '#fff'
+            }
+        },
+            {
+                show: true,
+		            left: 'right',
+		            min: 250,
+		            max: 300,
+		            seriesIndex: 1,
+		            calculable: true,
+		            inRange: {
+		                color: ['blue', 'blue', 'green', 'yellow','red']
+		            }
+            }],
+        bmap: {
+            center: [102.13066322374, 35.240018034923],
+            zoom: 5,
+            roam: true,
+            mapStyle: {
+            'styleJson': [
+                {
+                'featureType': 'water',
+                'elementType': 'all',
+                'stylers': {
+                    'color': '#031628'
+                }
+                },
+                {
+                'featureType': 'land',
+                'elementType': 'geometry',
+                'stylers': {
+                    'color': '#000102'
+                }
+                },
+                {
+                'featureType': 'highway',
+                'elementType': 'all',
+                'stylers': {
+                    'visibility': 'off'
+                }
+                },
+                {
+                'featureType': 'arterial',
+                'elementType': 'geometry.fill',
+                'stylers': {
+                    'color': '#000000'
+                }
+                },
+                {
+                'featureType': 'arterial',
+                'elementType': 'geometry.stroke',
+                'stylers': {
+                    'color': '#0b3d51'
+                }
+                },
+                {
+                'featureType': 'local',
+                'elementType': 'geometry',
+                'stylers': {
+                    'color': '#000000'
+                }
+                },
+                {
+                'featureType': 'railway',
+                'elementType': 'geometry.fill',
+                'stylers': {
+                    'color': '#000000'
+                }
+                },
+                {
+                'featureType': 'railway',
+                'elementType': 'geometry.stroke',
+                'stylers': {
+                    'color': '#08304b'
+                }
+                },
+                {
+                'featureType': 'subway',
+                'elementType': 'geometry',
+                'stylers': {
+                    'lightness': -70
+                }
+                },
+                {
+                'featureType': 'building',
+                'elementType': 'geometry.fill',
+                'stylers': {
+                    'color': '#000000'
+                }
+                },
+                {
+                'featureType': 'all',
+                'elementType': 'labels.text.fill',
+                'stylers': {
+                    'color': '#857f7f'
+                }
+                },
+                {
+                'featureType': 'all',
+                'elementType': 'labels.text.stroke',
+                'stylers': {
+                    'color': '#000000'
+                }
+                },
+                {
+                'featureType': 'building',
+                'elementType': 'geometry',
+                'stylers': {
+                    'color': '#022338'
+                }
+                },
+                {
+                'featureType': 'green',
+                'elementType': 'geometry',
+                'stylers': {
+                    'color': '#062032'
+                }
+                },
+                {
+                'featureType': 'boundary',
+                'elementType': 'all',
+                'stylers': {
+                    'color': '#465b6c'
+                }
+                },
+                {
+                'featureType': 'manmade',
+                'elementType': 'all',
+                'stylers': {
+                    'color': '#022338'
+                }
+                },
+                {
+                'featureType': 'label',
+                'elementType': 'all',
+                'stylers': {
+                    'visibility': 'off'
+                }
+                }
+            ]
+            }
+        },
+        series: [{
+            type: 'flowGL',
+            coordinateSystem: 'bmap',
+            data: data.flow,
+            supersampling: 4,
+            particleType: 'line',
+            particleDensity: 128,
+            particleSpeed: 1,
+            itemStyle: {
+                opacity: 0.7
+            }
+        },
+                {
+            type: 'heatmap',
+            coordinateSystem: 'bmap',
+            data: data.weather,
+            pointSize: 2,
+            blurSize: 5
+        },
+            {
+            name: 'pm2.5',
+            type: 'scatter',
+            coordinateSystem: 'bmap',
+            data: convertData(data.pollution),
+            symbolSize: function (val) {
+                return val[2] / 10;
+            },
+            label: {
+                normal: {
+                    formatter: '{b}',
+                    position: 'right',
+                    show: false
+                }
+                ,
+                emphasis: {
+                    show: true
+                }
+            },
+            itemStyle: {
+                normal: {
+                    color: '#ddb926'
+                }
+            }
+        },
+        {
+            name: 'Top 5',
+            type: 'effectScatter',
+            coordinateSystem: 'bmap',
+            data: convertData(data.pollution.sort(function (a, b) {
+                return b[0].value - a[0].value;
+            }).slice(0, 6)),
+            symbolSize: function (val) {
+                return val[2] / 10;
+            },
+            showEffectOn: 'emphasis',
+            rippleEffect: {
+                brushType: 'stroke'
+            },
+            hoverAnimation: true,
+            label: {
+                normal: {
+                    formatter: '{b}',
+                    position: 'right',
+                    show: true
+                }
+            },
+            itemStyle: {
+                normal: {
+                    color: '#f4e925',
+                    shadowBlur: 10,
+                    shadowColor: '#333'
+                }
+            },
+            zlevel: 1
+        }
+        ]
+    }
+
+
+            // var bmap = myChart.getModel().getComponent('bmap').getBMap();
+            myChart.setOption(option2);
+
+            var myChartProvice = echarts.init(document.getElementById('mapsProvice'));
+
+            var selectProvice=select_region;
+            var url = "../static/jslib/mapjs/" + selectProvice + "/" + selectProvice + ".js";
+                loadScript(url, setOpt);
+
+            myChart.on('click',params => {
+                console.log("params"+params.name);
+                selectProvice = params.name;///////省份名字
+                select_region = params.name;
+                var proArr = pollution.sort(function (a, b) {
+                    return b[0].value - a[0].value;
+                })
+                var proIndex = proArr.findIndex((pro) => pro[0].name === selectProvice);//省份下标
+                var provalue = proArr[proIndex][0].value;////省份值
+                var m = $('#select2 option:selected').val();
+                // console.log("index:", proIndex)
+                var url = "../static/jslib/mapjs/" + selectProvice + "/" + selectProvice + ".js";
+                loadScript(url, setOpt);
+                rank_now_city({rank:proIndex+1,name:selectProvice,value:provalue})
+
+                 $.ajax({
+                    url: "get_data_province",
+                    data: {data:JSON.stringify({'level':'province','name':params.name,'index':m,'date':global_time})},
+                    type: "POST",
+                    dataType: "json",
+                    success: function (data) {
+                        console.log("select province",data)
+                        //api_bar(data['api_bardata']);
+                        update_citydata(m,data['LineData_city']);
+
+                        var city_aqi=data['city_AQI'];
+                        yibiao(city_aqi['max']);
+                        var tmp=[city_aqi['pm2_5'],city_aqi['pm10'],city_aqi['so2'],city_aqi['no2'],city_aqi['o3'],city_aqi['co']];
+                        yibiaotext(tmp);
+                        document.getElementById("2p").href = "http://127.0.0.1:5000/2p/"+select_region;
+                        document.getElementById("3p").href = "http://127.0.0.1:5000/3p/"+select_region;
+                    }
+                })
+
+            })
+
+            function setOpt() {
+            var option = {
+                title: {
+                    text: selectProvice + '地区详情',
+                    x: 'center',
+                    textStyle: {
+                        color: 'white'
+                    }
+                },
+                roam: true,
+                tooltip: {
+				        trigger: 'item',
+				        formatter: function(params) {
+				            return params.name + ' : ' + params.value[2];
+				        }
+				    },
+
+                visualMap:{
+
+                     type: 'continuous',  // 颜色渐变条为连续还是分段 （continuous 或 piecewise）
+                     min: province[selectProvice].sort(function (a, b) {
+                return a.value[2] - b.value[2];
+            })[0].value[2],   // 渐变的最小值
+                    max: province[selectProvice].sort(function (a, b) {
+                return b.value[2] - a.value[2];
+            })[0].value[2],  // 渐变的最大值
+                   show: true,  // 是否展示渐变条
+                   inRange:  {  // 渐变颜色范围
+                     color: ['#87aa66', '#eba438', '#d94d4c'],
+                  },
+                  textStyle: {  // 地图上的样式
+                    color: '#fff',
+                }},
+
+					geo: {
+				        map: selectProvice,
+				        roam: true, //开启鼠标缩放和漫游
+				        zoom: 1, //地图缩放级别
+						selectedMode: false, //选中模式：single | multiple
+						left: 0,
+						right: 0,
+						top: 0,
+						bottom: 0,
+						layoutCenter: ['50%', '50%'], //设置后left/right/top/bottom等属性无效
+						layoutSize: '100%',
+				        label: {
+				            show:true,
+                            color:"white",
+				            emphasis: {
+				                show: false
+				            }
+				        },
+				        itemStyle: {
+				            normal: {
+				                areaColor: '#101f32',
+				                borderWidth: 1.1,
+				                borderColor: '#43d0d6',
+				            },
+				            emphasis: {
+				                areaColor: '#069'
+				            }
+				        }
+				    },
+				    series: [{
+			            name: 'PM2.5',
+			            type: 'scatter',
+			            coordinateSystem: 'geo',
+			            symbolSize: 5,
+			            label: {
+			                normal: {
+			                    show: false
+			                },
+			                emphasis: {
+			                    show: false
+			                }
+			            },
+			            itemStyle: {
+			                normal:{
+			                    label:{
+			                        show: true,
+                                    color:"white"
+
+                                }
+                            },
+			                emphasis: {
+			                    borderColor: '#fff',
+			                    borderWidth: 1
+			                }
+			            },
+			            data: province[selectProvice]
+			        }],
+                animation: false,
+
+            }
+            myChartProvice.setOption(option, true);
+        }
+        setop=setOpt;
+
+
+    }
+
+
+
+
+   </script>
+<script>
+     draw_time_line();
+    function draw_time_line(){
+        var chartDom = document.getElementById('layer03_left_02');
+        var myChart_wordcloud = echarts.init(chartDom);
+        var option;
+        var years = ['2013','2014','2015','2016','2017','2018'];
+        var events = [['国务院大气污染防治行动计划','环境保护部京津冀及周边地区落实大气污染防治行动计划实施细则'],
+            [],['环境保护部全面实施燃煤电厂超低排放和节能改造工作方案','工业领域煤炭清洁高效利用行动计划'],
+            ['国务院“十三五”节能减排综合工作方案'],
+            ['环境保护部京津冀及周边地区2017-2018年秋冬大气污染综合治理攻坚行动方案','环境保护部京津冀及周边地区2017年大气污染防治工作方案'],
+            ['国务院打赢蓝天保卫战三年行动计划']];
+        var data = [];
+        for(var i=0;i<events.length;i++){
+            data.push([i,events[i].length]);
+        }
+        option = {
+            tooltip: {
+                position: 'bottom',
+                extraCssText:'width:150px; white-space:pre-wrap',
+                formatter: function (params){
+                    var res = '<ul>';
+                    for(var i=0;i<events[params.dataIndex].length;i++){
+                        res+='<li>'+events[params.dataIndex][i]+'</li>'
+                    }
+                    res+='</ul>';
+                    return res;
+                },
+            },
+            title: [{
+                textBaseline: 'middle',
+                top: '8%',
+                text: '政策时间轴',
+                textStyle:{
+                    color:'white',
+                    size:8,
+                },
+            }],
+            singleAxis: [{
+                type: 'category',
+                boundaryGap: false,
+                data: years,
+                top:'32%',
+                height: '30%',
+                axisLabel: {
+                    interval: 0,
+                    textStyle:{
+                        color:"white", //刻度颜色
+                        fontSize:8  //刻度大小
+                    }
+                },
+                triggerEvent: true,
+            }],
+            series: [{
+                coordinateSystem: 'singleAxis',
+                type: 'scatter',
+                data: data,
+                symbolSize: function (data) {
+                    return data[1] * 8;
+                },
+                symbolFillColor: '#FA8072'
+            }],
+        };
+
+        option && myChart_wordcloud.setOption(option);
+
+        myChart_wordcloud.on('click', param => pieConsole.call(this, param));
+          function pieConsole(param) {
+                if (param.seriesIndex !== null && param.seriesIndex !== undefined) {
+                } else {
+                    var res = '<ul>';
+                    for(var i=0;i<events[parseInt(param.value)-2013].length;i++){
+                        res+='<li>'+events[parseInt(param.value)-2013][i]+'&nbsp;&nbsp;&nbsp;'+
+                            '<button style="background-color: #008B8B;border: none;color: white;padding: 3px 4px; font-size: 12px;"  onclick="wordcloud('+param.value+','+i+')">词云</button></li>'
+                    }
+                    res+='</ul>';
+                    document.getElementById("eventtitle").innerHTML=res;
+                    console.log('点击了x轴的某个刻度值',param.value)
+                }
+          }
+    }
+
+    function wordcloud(year,eventid) {
+        console.log(year,eventid);
+        var all_data={{word_count|safe }};
+        var JosnList;
+        for(var i=0;i<all_data.length;i++){
+            if((year.toString()+'_'+eventid.toString()) === all_data[i].id){
+                JosnList = all_data[i].res;
+            }
+        }
+        console.log(JosnList);
+        var optionFour = {
+            tooltip: {
+                show: true
+            },
+            series: [{
+                name: '评论词云',
+                type: 'wordCloud',
+                sizeRange: [7, 32],//文字范围
+                //文本旋转范围，文本将通过rotationStep45在[-90,90]范围内随机旋转
+                rotationRange: [-45, 90],
+                rotationStep: 20,
+                height: 200,
+                width:500,
+                textRotation: [0, 45, 90, -45],
+                //形状
+                {#maskImage: maskImage,#}
+                shape: 'circle',
+                textStyle: {
+                    normal: {
+                        color: function() {//文字颜色的随机色
+                            return 'rgb(' + [
+                                Math.round(Math.random() * 125+100),
+                                Math.round(Math.random() * 125+100),
+                                Math.round(Math.random() * 125+100)
+                            ].join(',') + ')';
+                        }
+                    },
+                    //悬停上去的字体的阴影设置
+                    emphasis: {
+                        shadowBlur: 10,
+                        shadowColor: '#333'
+                    }
+                },
+                data: JosnList
+            }]
+        };
+        var myChart_wordcloud = echarts.init(document.getElementById('wordcloud'));
+        myChart_wordcloud.clear();
+        //使用制定的配置项和数据显示图表
+        myChart_wordcloud.setOption(optionFour);
+    }
+</script>
+</body>
+
+</html>

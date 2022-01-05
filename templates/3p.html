@@ -1,0 +1,113 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全国3D地图</title>
+    <link href="../static/css/style.css" rel="stylesheet" type="text/css" media="all" />
+    <!--<script src="../static/js/echarts.min.js" charset="utf-8" type="text/javascript"></script>-->
+    <script src="../static/js/3p/city_season_bar.js"></script>
+    <script src="../static/js/3p/city_season_line.js"></script>
+    <script src="../static/js/3p/windRose.js"></script>
+    <script src="../static/js/3p/api_bar.js"></script>
+    <script src="../static/js/3p/city_rank_list.js"></script>
+    <script src="../static/js/3p/select_function.js"></script>
+    <script src="../static/js/3p/draw_climate_data.js"></script>
+
+    <script src="../static/js/echarts.min.js"></script>
+    <script src="../static/js/echarts-gl.min.js"></script>
+    <script src="../static/jslib/jquery.min.js"></script>
+    <!--    <script src="./jquery-3.5.1.min.js"></script>-->
+</head>
+
+<body>
+<div class="wpbox">
+        <div class="bnt">
+            <div class="topbnt_left fl">
+                <ul>
+                    <!-- <li class="active"><a href="#">警情警力</a></li> -->
+                    <li ><a href="http://127.0.0.1:5000/">主页面</a></li>
+                    <li ><a href="http://127.0.0.1:5000/2p" id="2p">成因分析</a></li>
+                    <li class="active"><a href="#">统计分析</a></li>
+                    <li><a href="http://127.0.0.1:5000/predict">预测</a></li>
+                </ul>
+            </div>
+            <h1 class="tith1 fl">{{city_name}}污染情况大数据分析</h1>
+
+        </div>
+
+    <div style="width:100%;height: 100%;padding:20px;">
+        <div style="width:100%;height: 40%;float:left;margin:15px;padding=10px;">
+            <div style="width:30%;height: 95%;margin:10px;background-image: url(../static/img/panel.png);background-size: 100% 100%;background-repeat: no-repeat;background-position: top center;float:left;padding:10px;">
+                <div>风玫瑰图</div>
+                <div id="windRose" style="width:98%;height: 95%;" ></div>
+            </div>
+            <div style="width:28%;height: 95%;margin:10px;background-image: url(../static/img/panel.png);background-size: 100% 100%;background-repeat: no-repeat;background-position: top center;float:left;padding:10px;">
+                <div>各月污染物aqi堆叠柱形图</div>
+                <div id="api_bar" style="width:98%;height: 95%;" ></div>
+            </div>
+            <div style="width:23%;height: 95%;margin:10px;background-image: url(../static/img/panel.png);background-size: 100% 100%;background-repeat: no-repeat;background-position: top center;float:left;padding:10px;">
+                <div>省市气象统计图</div>
+                <div id="climate_bar" style="width:98%;height: 90%;" ></div>
+            </div>
+        </div>
+
+    <div style="width:100%;height:40%;float:left;margin:15px;">
+        <div  style="width:30%;height: 90%;float:left;margin:10px;background-image: url(../static/img/panel.png);background-size: 100% 100%;background-repeat: no-repeat;background-position: top center;padding:10px;" >
+            <div>空气质量天数图</div>
+            <div id="city_season_bar" style="width:95%;height:85%"></div>
+        </div>
+        <div style="float:left;width:28%;height: 90%;;margin:10px;background-image: url(../static/img/panel.png);background-size: 100% 100%;background-repeat: no-repeat;background-position: top center;padding:10px;">
+            <div id="city_season_line_label" >
+                <span>污染物年际变化/</span><span style="color:#00A09A;"></span>
+                <select id="select_pollution" style="visibility: visible" onchange="func_select_pollution()">
+                    <option value="pm2_5" selected="selected">pm2_5</option>
+                    <option value="pm10">pm10</option>
+                    <option value="so2">so2</option>
+                    <option value="no2">no2</option>
+                    <option value="co">co</option>
+                    <option value="o3">o3</option>
+                </select>
+            </div>
+            <div id="city_season_line" style="width:95%;height:85%;margin:10px;" ></div>
+        </div>
+        <div style="float:left;width:23%;height: 90%;;margin:10px;background-image: url(../static/img/panel.png);background-size: 100% 100%;background-repeat: no-repeat;background-position: top center;padding:10px;" >
+            <div>各市污染物指数</div>
+            <div id="ranklist" style="width:98%;height: 90%;" ></div>
+        </div>
+    </div>
+    </div>
+
+</div>
+
+    <script>
+        draw_climate_bar({{ climate_data|safe }});
+        rankList({{ city_ranklist|safe }});
+
+       city_season_bar({{city_season_bar|safe}});
+       draw_wind_rose({{ city_wind_angle|safe }});
+       api_bar({{api_bardata|safe}});
+
+       var city={{city|safe}};
+       city=city['city'];
+       console.log(city);
+       document.getElementById("2p").href = "http://127.0.0.1:5000/2p/"+city;
+
+       $.ajax({
+            url: "http://127.0.0.1:5000/get_season_city_pollution",//路由
+            data: {data:JSON.stringify({'pollution':'pm2_5','city':city,level:'province' })},
+            type: "POST",
+            dataType: "json",
+            success: function (p) {
+                var data=p.data;
+                var pollution=p.pollution;
+                city_season_line(data,pollution)
+            }
+        });
+
+   </script>
+</body>
+
+</html>

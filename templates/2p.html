@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全国3D地图</title>
+    <link href="../static/css/style.css" rel="stylesheet" type="text/css" media="all" />
+    <!--<script src="../static/js/echarts.min.js" charset="utf-8" type="text/javascript"></script>-->
+    <script src="../static/js/2p/dots_histogram.js"></script>
+    <script src="../static/js/2p/heatmap.js"></script>
+
+    <script src="../static/js/echarts.min.js"></script>
+    <script src="../static/js/echarts-gl.min.js"></script>
+    <script src="../static/jslib/jquery.min.js"></script>
+    <!--    <script src="./jquery-3.5.1.min.js"></script>-->
+    <style>
+        *{
+            padding: 0;
+            margin: 0;
+        }
+        .search_factory{
+            /*width: 100%;*/
+            /*margin: 100px auto;*/
+            display: flex;
+            /*border: 1px solid red;*/
+        }
+        .search_factory input{
+            float: left;//左浮动
+            /*flex: 8;*/
+            height: 30px;
+            width: 70%;
+            outline: none;
+            border: 1px solid #043e86;
+            /*box-sizing: border-box;//盒子模型，怪异IE盒子模型，width=content+border*2+padding*2*/
+            /*padding-left: 10px;*/
+        }
+        .search_factory button{
+            float: left;
+            /*flex: 1;*/
+            height: 30px;
+            width: 30%;
+            background-color: #043e86;
+            color: white;
+            border-style: none;
+            outline: none;
+        }
+        .search_factory button i{
+            font-style: normal;
+        }
+        .search_factory button:hover{
+            font-size: 16px;
+        }
+    </style>
+
+
+
+</head>
+
+<body>
+
+<div class="wpbox">
+        <div class="bnt">
+            <div class="topbnt_left fl">
+                <ul>
+                    <!-- <li class="active"><a href="#">警情警力</a></li> -->
+                    <li ><a href="http://127.0.0.1:5000/">主页面</a></li>
+
+                    <li class="active"><a href="#">成因分析</a></li>
+                    <li><a href="http://127.0.0.1:5000/3p" id="3p">统计分析</a></li>
+                    <li><a href="http://127.0.0.1:5000/predict">预测</a></li>
+                </ul>
+            </div>
+            <h1 class="tith1 fl">污染情况大数据分析</h1>
+        </div>
+    <div style="width: 100%;height: 100%">
+
+<div style="width:50%;height:100%;float:left;background-image: url(../static/img/panel.png);background-size: 100% 100%;background-repeat: no-repeat;background-position: top center;">
+    <select id="select" style="visibility: visible; position: relative; left: 10px;height: 30px;" onchange="func_select()">
+                    <option value="pm2_5">pm2_5</option>
+                    <option value="pm10">pm10</option>
+                    <option value="so2">so2</option>
+                    <option value="no2">no2</option>
+                    <option value="co">co</option>
+                    <option value="o3">o3</option>
+                    <option value="temp">temp</option>
+                    <option value="rh">rh</option>
+                    <option value="psfc">psfc</option>
+                </select>
+    <select id="select2" style="visibility: visible; position: relative; left: 10px;height: 30px;" onchange="func_select2()">
+        <option value="pm10">pm10</option>
+        <option value="pm2_5">pm2_5</option>
+
+                    <option value="so2">so2</option>
+                    <option value="no2">no2</option>
+                    <option value="co">co</option>
+                    <option value="o3">o3</option>
+                    <option value="temp">temp</option>
+                    <option value="rh">rh</option>
+                    <option value="psfc">psfc</option>
+                </select>
+    <select id="select3" style="visibility: visible;position: relative; left: 10px;height: 30px;" onchange="func_select3()">
+                    <option value="so2">so2</option>
+        <option value="pm2_5">pm2_5</option>
+                    <option value="pm10">pm10</option>
+
+                    <option value="no2">no2</option>
+                    <option value="co">co</option>
+                    <option value="o3">o3</option>
+                    <option value="temp">temp</option>
+                    <option value="rh">rh</option>
+                    <option value="psfc">psfc</option>
+                </select>
+    <div  id="dots_histogram" style="float:left;width:100%;height:85%;"></div>
+
+
+</div>
+
+
+    <div style="width: 50%;height: 100%;float: left;background-image: url(../static/img/panel.png);">
+        <div style="width:40%;height:100%;float:left;">
+            <div  id="corre_heatmap" style="width:95%;height:40%;float:left;"></div>
+            <div id="pie_chart" style="width: 95%;height: 50%; float: left"></div>
+        </div>
+
+        <div style="width:60%;height:100%;float:left;">
+            <div class="search_factory" style="float: left ;margin:25px">
+            <input type="text" placeholder="请输入..." name="" id="data" value="" />
+            <button onclick="search()"><i>搜索</i></button>
+        </div>
+            <select id="select4" style="margin-top:25px;height: 30px;left: 10%;position: relative;left: 10%" onchange="func_select4()">
+
+                    <option value="pm2_5">pm2_5</option>
+                    <option value="pm10">pm10</option>
+                    <option value="so2">so2</option>
+                    <option value="no2">no2</option>
+                    <option value="co">co</option>
+                    <option value="o3">o3</option>
+<!--                    <option value="temp">temp</option>-->
+<!--                    <option value="rh">rh</option>-->
+<!--                    <option value="psfc">psfc</option>-->
+                </select>
+            <div id="mapsProvice" style="border-color: white; width: 80%;height: 80%; float: left"></div>
+        </div>
+
+    </div></div>
+</div>
+<script>
+     draw_correlation_heatmap()
+</script>
+<script>
+
+var city={{city|safe}};
+city=city['city'];
+console.log(city);
+document.getElementById("3p").href = "http://127.0.0.1:5000/3p/"+city;
+
+var chartDom = document.getElementById('dots_histogram');
+var myChart = echarts.init(chartDom);
+var axisname = [{"name":"pm2_5"}, {"name":"pm10"}, {"name":"so2"}];
+var range = {}
+
+var option;
+var size=3;
+var area = 80;
+var leftxy = area/size;
+var margin = (100-area)/2;
+var widthxy = leftxy*0.8;
+// name.push("pm2_5");
+// name.push("pm10");
+// name.push("so2");
+var dataAll = {{get_relation|safe}};
+var histogram = {{get_histogram|safe}};
+
+for(var key in histogram){
+    range[key]=[]
+    range[key].push(histogram[key].x[0])
+    range[key].push(histogram[key].x[histogram[key].x.length-1])
+    var maxvalue = histogram[key].y[0];
+    var minvalue = histogram[key].y[0];
+    for(var i=0;i<histogram[key].y.length;++i){
+        if(!isNaN(histogram[key].y[i])&&(isNaN(maxvalue)||histogram[key].y[i]>maxvalue)) maxvalue=histogram[key].y[i];
+        if(!isNaN(histogram[key].y[i])&&(isNaN(minvalue)||histogram[key].y[i]<minvalue)) minvalue=histogram[key].y[i];
+    }
+    console.log("key:", key, "maxvalue:", maxvalue, " minvalue:", minvalue)
+    for(var i=0;i<histogram[key].y.length;++i){
+        histogram[key].y[i]=(histogram[key].y[i]-minvalue)/(maxvalue-minvalue)*(range[key][1]-range[key][0])+range[key][0];
+    }
+    console.log("histogram:", histogram)
+}
+
+// $.ajax({
+//             url: "get_data_main_map",
+//             data: {data:JSON.stringify({'year':2018})},
+//             type: "POST",
+//             dataType: "json",
+//             success: function (p) {
+//       }
+//         })
+
+
+function func_select(){
+            var m = $('#select option:selected').val();
+            console.log(m);
+            axisname[0].name=m;
+            drawmulti(axisname);
+        }
+
+function func_select2(){
+            var m = $('#select2 option:selected').val();
+            console.log(m);
+            axisname[1].name=m;
+            drawmulti(axisname);
+        }
+
+
+function func_select3(){
+            var m = $('#select3 option:selected').val();
+            console.log(m);
+            axisname[2].name=m;
+            drawmulti(axisname);
+        }
+
+drawmulti(axisname);
+
+
+function drawmulti(name){
+var markLineOpt = {
+    animation: false,
+    label: {
+        formatter: 'y = 0.5 * x + 3',
+        align: 'right'
+    },
+    lineStyle: {
+        type: 'solid'
+    },
+    tooltip: {
+        formatter: 'y = 0.5 * x + 3'
+    },
+    data: [[{
+        coord: [0, 3],
+        symbol: 'none'
+    }, {
+        coord: [20, 13],
+        symbol: 'none'
+    }]]
+};
+
+option = {
+    // title: {
+    //     text: 'Anscombe\'s quartet',
+    //     left: 'center',
+    //     top: 0
+    // },
+    grid: [
+    ],
+    tooltip: {
+        formatter: 'Group {a}: ({c})'
+    },
+    xAxis: [
+    ],
+    yAxis: [
+    ],
+    series: [
+    ]
+};
+
+//leftxy +='%'
+
+namepollution = [];
+for(var i=0;i<size;++i){
+    for(var j=0;j<size;++j){
+        var tmp={};
+        tmp.x=(leftxy*j+margin)+'%';
+        tmp.y=(leftxy*i+margin)+'%';
+        tmp.width=widthxy+'%';
+        tmp.height=widthxy+'%';
+        tmp.show = false;
+        option.grid.push(tmp);
+        var tmp_xaxis={};
+        tmp_xaxis.gridIndex = j*size+i;
+        // tmp_xaxis.min=0;
+        // tmp_xaxis.max=20;
+
+
+        //tmp_xaxis.axisLabel={"show": false};
+        // tmp_xaxis.axisLabel['color'] = "white";
+        tmp_xaxis.axisLine={}
+        tmp_xaxis.splitLine = {}
+        tmp_xaxis.splitLine.show = false
+        tmp_xaxis.axisLine.lineStyle={"color":"white"}
+        tmp_xaxis.nameTextStyle={};
+        tmp_xaxis.nameTextStyle.align = "center";
+        tmp_xaxis.nameTextStyle.color = "white";
+
+
+        var tmp_yaxis={}
+        tmp_yaxis.gridIndex = j*size+i;
+        tmp_yaxis.axisLabel={};
+        tmp_yaxis.axisLabel['color'] = "white";
+        tmp_yaxis.axisLine={}
+        tmp_yaxis.splitLine = {}
+        tmp_yaxis.splitLine.show = false
+        tmp_yaxis.axisLine.lineStyle={"color":"white"}
+        tmp_yaxis.nameTextStyle={};
+        tmp_yaxis.nameTextStyle.align = "center";
+        tmp_yaxis.nameTextStyle.color = "white";
+
+
+        if(i===0) {
+            tmp_yaxis.name = name[j].name;
+            tmp_yaxis.nameLocation='middle';
+            tmp_yaxis.nameGap=30
+            tmp_yaxis.axisLabel={"show": true}
+        }
+        else tmp_yaxis.axisLabel={"show": false}
+
+        if(j===size-1) {
+            tmp_xaxis.name = name[i].name;
+            tmp_xaxis.nameLocation='middle'
+            tmp_xaxis.nameGap=30
+            tmp_xaxis.axisLabel={"show": true}
+            }
+        else tmp_xaxis.axisLabel={"show": false}
+
+        var tmp_series = {};
+        if(i!==j){
+            var nameij=name[j].name+name[i].name;
+            tmp_series.name = name[j].name+name[i].name;
+            tmp_series.type = 'scatter';
+            tmp_series.xAxisIndex = j*size+i;
+            tmp_series.yAxisIndex = j*size+i;
+            tmp_series.data = dataAll[nameij];
+            tmp_xaxis.min = range[name[i].name][0];
+            tmp_xaxis.max = range[name[i].name][1];
+            tmp_yaxis.min = range[name[j].name][0];
+            tmp_yaxis.max = range[name[j].name][1];
+
+
+        }
+        else{
+            // tmp_xaxis.type='value';
+            // tmp_yaxis.type='value';
+            tmp_xaxis.data=histogram[name[i].name].x
+            tmp_series.name = name[j].name+name[i].name;
+            tmp_series.type = 'bar';
+            tmp_series.xAxisIndex = j*size+i;
+            tmp_series.yAxisIndex = j*size+i;
+            tmp_series.data = histogram[name[i].name].y;
+            tmp_yaxis.min = range[name[j].name][0];
+            tmp_yaxis.max = range[name[j].name][1];
+            console.log(name[i].name, histogram[name[i].name].y, histogram[name[i].name].x)
+            if(j===size-1) {
+            tmp_xaxis.name = name[i].name;
+            tmp_xaxis.nameLocation='middle'
+            tmp_xaxis.nameGap=30
+                tmp_series.backgroundColor="red"
+
+        }
+
+
+
+        }
+
+        option.xAxis.push(tmp_xaxis);
+        option.yAxis.push(tmp_yaxis);
+        option.series.push(tmp_series);
+    }
+}
+
+//option.xAxis[7].axisLabel={"show": true}
+//option.xAxis[7].offset = 170;
+option && myChart.setOption(option);
+}
+
+   </script>
+
+    <script>
+    var factory_pos;//工厂位置[{"name":名字,"value":[lat,lon,xx]},{"name":名字,"value":[lat,lon,xx]},,...]
+    var pollution_all;//总{"so2":[{"name":城市名，"value":__},{"name":城市名，"value":__},...],"pm2_5":[...],...}
+    var pollution_val;//某一指标的pollution [{"name":城市名，"value":__},{"name":城市名，"value":__},...]
+
+    var pollusion_name="so2";//指标名
+    var search_name="钢铁厂";
+    var selectProvice={{city|safe}}['city'];//省
+    var pie_data;//每个城市化工厂数量[{"name":"XXX",'value':xxx},...]
+    var city={{city|safe}};
+    city=city['city'];
+
+    $.ajax({
+            url: "http://127.0.0.1:5000/get_factory_map",/////////////////////
+            data: {data:JSON.stringify({'search_for':search_name,'city':city})},
+            type: "POST",
+            dataType: "json",
+            success: function (w) {
+                pollution_all = w.pollution_all;///////////////这里传
+                factory_pos = w.factory_pos;
+                pie_data = w.pie_data;
+                pollution_val=pollution_all[pollusion_name];
+                console.log(pie_data);
+                drawProvince();
+                draw_pieChart();
+            }
+        })
+
+    function func_select4(){
+            pollusion_name = $('#select4 option:selected').val();
+            pollution_val=pollution_all[pollusion_name];
+            console.log("pollution_val::::::::::::::", pollution_val);
+            console.log("pollution_name:::::::::::::", pollusion_name)
+            // drawmulti(axisname);
+            drawProvince();
+        }
+
+    function search(){
+     var search_for = $('#data').val();//检索工厂名
+        search_name = search_for;
+        var city={{city|safe}};
+        city=city['city'];
+        $.ajax({
+            url: "http://127.0.0.1:5000/get_factory_map",/////////////////////
+            data: {data:JSON.stringify({'search_for':search_for,'city':city})},
+            type: "POST",
+            dataType: "json",
+            success: function (w) {
+                pollution_all = w.pollution_all;///////////////这里传
+                factory_pos = w.factory_pos;
+                pie_data = w.pie_data;
+                pollution_val=pollution_all[pollusion_name];
+                console.log(pie_data);
+                drawProvince();
+                draw_pieChart();
+            }
+        })
+    }
+
+    function loadScript(url, callback) {
+            var script = document.createElement("script")
+            script.type = "text/javascript";
+            if (script.readyState) {
+                script.onreadystatechange = function() {
+                    if (script.readyState == "loaded" || script.readyState == "complete") {
+                        script.onreadystatechange = null;
+                        callback();
+                    }
+                };
+            } else {
+                script.onload = function() {
+                    callback();
+                };
+            }
+            script.src = url;
+            document.getElementsByTagName("head")[0].appendChild(script);
+        }
+
+
+
+    var myChartProvice;
+    function drawProvince(){
+        //console.log("drawdrawdraw!!!!!")
+        myChartProvice = echarts.init(document.getElementById('mapsProvice'));
+        selectProvice={{city|safe}}['city'];
+            var url = "../static/jslib/mapjs/" + selectProvice + "/" + selectProvice + ".js";
+                loadScript(url, setOpt);
+        }
+
+    function setOpt() {
+        console.log("factory_pos::::::", factory_pos);
+        console.log("pollution_val::::", pollution_val);
+        console.log("pollution_all::::", pollution_all);
+        //console.log("setoptsetopt!!!!", selectProvice)
+            var option = {
+                // title: {
+                //     text: selectProvice + '地区详情',
+                //     x: 'center',
+                //     textStyle: {
+                //         color: 'white'
+                //     }
+                // },
+                roam: true,
+                // tooltip: [{
+				//         trigger: 'item',
+                //         seriesIndex: 0,
+				//         formatter: function(params) {
+				//             console.log("pppppparammmmmssss:", params.value)
+				//             return params.name + ' : ' + params.value;
+				//         }
+				//     },{
+				//         trigger: 'item',
+                //         seriesIndex: 1,
+				//         formatter: function(params) {
+				//             console.log("pppppparammmmmssss:", params.value)
+				//             return params.name + ' : ' + params.value[2];
+				//         }
+				//     }],
+
+                visualMap:{
+                    left:'right',
+                    min:pollution_val.sort(function (a, b) {
+                return b.value- a.value;
+            })[pollution_val.length-1].value,
+                    max:pollution_val.sort(function (a, b) {
+                return b.value- a.value;
+            })[0].value,
+                },
+
+					geo: {
+				        map: selectProvice,
+                        roam: false,
+				        // roam: true, //开启鼠标缩放和漫游
+				        // zoom: 1, //地图缩放级别
+						// selectedMode: false, //选中模式：single | multiple
+						// left: 0,
+						// right: 0,
+						// top: 0,
+						// bottom: 0,
+						// layoutCenter: ['50%', '50%'], //设置后left/right/top/bottom等属性无效
+						// layoutSize: '100%',
+				        // label: {
+				        //     show:true,
+                        //     color:"white",
+				        //     emphasis: {
+				        //         show: false
+				        //     }
+				        // },
+				    },
+				    series: [{
+			            name: 'PM2.5',
+			            type: 'map',
+                        roam:'false',
+                        mapType: selectProvice,
+			            coordinateSystem: 'geo',
+
+			            label: {
+			                normal: {
+			                    show: false
+			                },
+			                emphasis: {
+			                    show: true,
+                                formatter: function(params) {
+                                    console.log("pppppparammmmmssss:", params.value)
+                                    return params.name + ' : ' + Math.round(params.value * 100) / 100;
+				        }
+			                }
+			            },
+			            itemStyle: {
+			                normal:{
+			                    label:{
+			                        show: true,
+                                    color:"white"
+
+                                }
+                            },
+			                emphasis: {
+			                    borderColor: '#fff',
+			                    borderWidth: 1
+			                }
+			            },
+			            data:pollution_val
+			        },{
+			            name: 'factory',
+			            type: 'scatter',
+			            coordinateSystem: 'geo',
+
+			            symbolSize: 10,
+			            label: {
+			                normal: {
+			                    show: false
+			                },
+			                emphasis: {
+			                    show: true,
+                                formatter: function(params) {
+                                    return params.name + ' : ' + Math.round(params.value[2] * 100) / 100;
+				        }
+			                }
+			            },
+			            itemStyle: {
+			                borderColor:"black",
+			                normal:{
+			                    label:{
+			                        show: true,
+                                    color:"white"
+
+                                },
+                                borderColor: '#0e0e0e',
+			                    borderWidth: 1
+                            },
+			                emphasis: {
+			                    borderColor: '#fff',
+			                    borderWidth: 1
+			                }
+			            },
+			            data: factory_pos
+                    }],
+
+            }
+            myChartProvice.setOption(option, true);
+        }
+
+        drawProvince();
+draw_pieChart();
+    function draw_pieChart(){
+        var chartDom = document.getElementById('pie_chart');
+var pie_chart = echarts.init(chartDom);
+var option;
+        option = {
+    // backgroundColor: '#2c343c',
+
+    title: {
+        text: selectProvice+search_name+"分布",
+        left: 'center',
+        top: 20,
+        textStyle: {
+            color: '#ccc'
+        }
+    },
+
+    tooltip: {
+        trigger: 'item'
+    },
+
+    visualMap: {
+        type:'continuous',
+        show: false,
+        min: pie_data.sort(function (a, b) {
+                return b.value- a.value;
+            })[pie_data.length-1].value,
+        max: pie_data.sort(function (a, b) {
+                return b.value- a.value;
+            })[0].value,
+        // inRange:  {  // 渐变颜色范围
+        //              color: ['#87aa66', '#eba438', '#d94d4c'],
+        //           }
+    },
+    series: [
+        {
+            name: '访问来源',
+            type: 'pie',
+            radius: '55%',
+            center: ['50%', '50%'],
+            data: pie_data.sort(function (a, b) { return a.value - b.value; }),
+            roseType: 'radius',
+            label: {
+                color: 'white'
+            },
+            labelLine: {
+                lineStyle: {
+                    color: 'white'
+                },
+                smooth: 0.2,
+                length: 10,
+                length2: 20
+            },
+            // itemStyle: {
+            //     color: '#c23531',
+            //     shadowBlur: 200,
+            //     shadowColor: 'rgba(0, 0, 0, 0.5)'
+            // }
+            // ,
+
+            // animationType: 'scale',
+            // animationEasing: 'elasticOut',
+            // animationDelay: function (idx) {
+            //     return Math.random() * 200;
+            // }
+        }
+    ]
+};
+        option && pie_chart.setOption(option);
+    }
+</script>
+</body>
+
+</html>
